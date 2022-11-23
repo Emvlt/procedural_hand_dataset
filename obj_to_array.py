@@ -1,4 +1,4 @@
-from typing import Tuple
+import pathlib
 import numpy as np
 
 def asses_extremums(x:float, x_min:float, x_max:float):
@@ -45,7 +45,7 @@ def parse_to_list(file_path='base_model.obj'):
 
     return x_coordinates, y_coordinates, z_coordinates, (x_min, x_max), (y_min, y_max), (z_min, z_max)
 
-def parse_obj_file(file_path='base_model.obj', mat_size = 512) -> np.uint8:
+def parse_obj_file(file_path=pathlib.Path('base_model.obj'), mat_size = 512, save=False) -> np.uint8:
     """Parse a .obj file to a numpy array
 
     Args:
@@ -69,6 +69,8 @@ def parse_obj_file(file_path='base_model.obj', mat_size = 512) -> np.uint8:
         y_ = scale(translate(y, y_min), y_diff, a-1)
         z_ = scale(translate(z, z_min), z_diff, b-1)
         mat[mat_size-1-y_, int((mat_size-b)/2)+z_, int((mat_size-c)/2)+x_] = 1
+    if save:
+        np.save(file_path.rename(file_path.with_suffix('.npy')), mat)
     return mat
 
 def main():
