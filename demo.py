@@ -13,13 +13,12 @@ def main(args):
     else:
         print(f'Parsing {args.file_path}')
         t0 = time.time()
-        parsed_array = obj_to_array.parse_obj_file(args.file_path,512)
+        parsed_array = obj_to_array.parse_obj_file(args.file_path,512, numpy_file_path)
         print(f'Parsed. Elapsed time : {time.time()-t0:.2f} seconds')
 
     fig, axes = plt.subplots(1,3)
     for i in range(3):
         axes[i].imshow(parsed_array.sum(i))
-    plt.show()
 
 if __name__=='__main__':
     parser = argparse.ArgumentParser()
