@@ -7,13 +7,13 @@ def asses_extremums(x:float, x_min:float, x_max:float):
         x_min=x
     elif x_max < x:
         x_max=x
-    return x, x_min, x_max
+    return x_min, x_max
 
 def translate(x:float, x_min:float):
     return x+abs(x_min)
 
-def scale(x:float, x_max:float, scaleFactor:float):
-    return int(x*scaleFactor/x_max)
+def scale(x:float, x_max:float, scale_factor:float):
+    return int(x*scale_factor/x_max)
 
 def parse_to_list(file_path='base_model.obj'):
     """parse an .obj file to a list
@@ -32,21 +32,21 @@ def parse_to_list(file_path='base_model.obj'):
     y_min, y_max = 0, 0
     z_min, z_max = 0, 0
     for line in obj_file:
-        if line[0]=='v':
+        if line[:2]=='v ':
             index1 = line.find(" ") + 1
             index2 = line.find(" ", index1 + 1)
             index3 = line.find(" ", index2 + 1)
             x, y, z = float(line[index1:index2]), float(line[index2:index3]), float(line[index3:-1])
-            x, x_min, x_max = asses_extremums(x, x_min, x_max)
-            y, y_min, y_max = asses_extremums(y, y_min, y_max)
-            z, z_min, z_max = asses_extremums(z, z_min, z_max)
+            x_min, x_max = asses_extremums(x, x_min, x_max)
+            y_min, y_max = asses_extremums(y, y_min, y_max)
+            z_min, z_max = asses_extremums(z, z_min, z_max)
             x_coordinates.append(x)
             y_coordinates.append(y)
             z_coordinates.append(z)
 
     return x_coordinates, y_coordinates, z_coordinates, (x_min, x_max), (y_min, y_max), (z_min, z_max)
 
-def parse_obj_file(file_path=pathlib.Path('base_model.obj'), mat_size = 512, save=False) -> np.uint8:
+def parse_obj_file(file_path=pathlib.Path('base_model.obj'), mat_size = 512, save_path=None) -> np.uint8:
     """Parse a .obj file to a numpy array
 
     Args:
@@ -70,13 +70,13 @@ def parse_obj_file(file_path=pathlib.Path('base_model.obj'), mat_size = 512, sav
         y_ = scale(translate(y, y_min), y_diff, a-1)
         z_ = scale(translate(z, z_min), z_diff, b-1)
         mat[mat_size-1-y_, int((mat_size-b)/2)+z_, int((mat_size-c)/2)+x_] = 1
-    if save:
-        np.save(file_path.rename(file_path.with_suffix('.npy')))
+    if save_path is not None:
+        np.save(save_path, mat)
     return mat
 
-def main():
+def main(args):
     file_path = pathlib.Path(args.file_path)
-    parse_obj_file(file_path)
+    parse_obj_file(file_path, save_path='base_model.npy')
 
 if __name__=='__main__':
     parser = argparse.ArgumentParser()
