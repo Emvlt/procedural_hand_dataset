@@ -1,5 +1,6 @@
 import pathlib
 import numpy as np
+import argparse
 
 def asses_extremums(x:float, x_min:float, x_max:float):
     if x < x_min:
@@ -70,13 +71,17 @@ def parse_obj_file(file_path=pathlib.Path('base_model.obj'), mat_size = 512, sav
         z_ = scale(translate(z, z_min), z_diff, b-1)
         mat[mat_size-1-y_, int((mat_size-b)/2)+z_, int((mat_size-c)/2)+x_] = 1
     if save:
-        np.save(file_path.rename(file_path.with_suffix('.npy')), mat)
+        np.save(file_path.rename(file_path.with_suffix('.npy')))
     return mat
 
 def main():
-    parse_to_list()
+    file_path = pathlib.Path(args.file_path)
+    parse_obj_file(file_path)
 
 if __name__=='__main__':
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--file_path', required=False, type=str, default= 'base_model.obj')
+    args = parser.parse_args()
+    main(args)
 
 
